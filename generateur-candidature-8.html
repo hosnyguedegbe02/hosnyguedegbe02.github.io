@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="SSfOUun0Y6vU-jZmWmHDBPWFGBPsbv9RpJ8bmToF0cI" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Dossier — Générateur de CV et lettre de motivation gratuit</title>
+<meta name="description" content="Générez gratuitement votre CV, votre lettre de motivation et une correction de votre profil en quelques minutes. Outil simple, en français, pensé pour les candidatures au Bénin et en Afrique francophone.">
+<meta name="keywords" content="générateur CV gratuit, lettre de motivation, créer CV en ligne, CV Bénin, candidature emploi, correcteur CV">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://hosnyguedegbe02.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mon Dossier — Générateur de CV et lettre de motivation gratuit">
+<meta property="og:description" content="Créez votre CV, votre lettre de motivation et une correction de votre profil en quelques minutes, gratuitement.">
+<meta property="og:url" content="https://hosnyguedegbe02.github.io/">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mon Dossier — Générateur de CV et lettre de motivation gratuit">
+<meta name="twitter:description" content="Créez votre CV, votre lettre de motivation et une correction de votre profil en quelques minutes, gratuitement.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Crect width='44' height='44' rx='12' fill='%230e4b43'/%3E%3Cpath d='M13 12h12l6 6v14a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V14a2 2 0 0 1 2-2z' fill='%23fbf8f2'/%3E%3Cpath d='M25 12v6h6' fill='none' stroke='%230e4b43' stroke-width='1.5'/%3E%3Cpath d='M16 24l4 4 8-8' fill='none' stroke='%23b9862f' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Google AdSense : remplace le contenu de data-ad-client par ton propre ID une fois ton compte approuvé -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9456025403062274" crossorigin="anonymous"></script>
+<!-- Firebase (authentification + stockage du compteur d'essais) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+  :root{
+    --ink:#1c1e1b;
+    --ink-soft:#4a4d47;
+    --paper:#fbf8f2;
+    --paper-2:#f1ece0;
+    --pine:#0e4b43;
+    --pine-dark:#08302b;
+    --gold:#b9862f;
+    --line:#d8d2c2;
+    --danger:#9c3b2e;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+
+  .logo-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .logo-row svg{flex-shrink:0;}
+  .logo-wordmark{
+    font-family:'Fraunces',serif;font-weight:700;font-size:19px;
+    color:var(--pine-dark);letter-spacing:-.01em;
+  }
+  .logo-wordmark span{color:var(--gold);}
+
+  header.top{margin-bottom:28px;}
+  .stamp{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:12px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--pine);
+    border:1px solid var(--pine);border-radius:999px;
+    padding:4px 12px;margin-bottom:14px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(28px,7vw,38px);
+    line-height:1.08;
+    margin:0 0 8px;
+    color:var(--pine-dark);
+  }
+  header.top p{margin:0;color:var(--ink-soft);font-size:15px;max-width:46ch;}
+
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    margin-bottom:20px;
+  }
+  .card h2{
+    font-family:'Fraunces',serif;
+    font-size:19px;font-weight:600;
+    margin:0 0 4px;color:var(--pine-dark);
+  }
+  .card .hint{font-size:13px;color:var(--ink-soft);margin:0 0 18px;}
+
+  label{
+    display:block;font-size:13px;font-weight:600;
+    color:var(--ink);margin:16px 0 6px;
+  }
+  label .opt{font-weight:400;color:var(--ink-soft);font-size:12px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], textarea{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--paper);
+    color:var(--ink);
+    resize:vertical;
+  }
+  input[type=text]:focus, textarea:focus{
+    outline:2px solid var(--pine);outline-offset:1px;
+    background:#fff;
+  }
+  textarea{min-height:78px;}
+
+  .photo-upload{
+    display:flex;align-items:center;gap:14px;margin-top:6px;
+  }
+  .photo-preview{
+    width:64px;height:64px;border-radius:50%;
+    background:var(--paper-2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;flex-shrink:0;color:var(--ink-soft);font-size:11px;
+  }
+  .photo-preview img{width:100%;height:100%;object-fit:cover;}
+  .photo-upload-btn{
+    background:none;border:1px solid var(--line);border-radius:8px;
+    padding:9px 14px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;
+    color:var(--pine-dark);cursor:pointer;
+  }
+  .photo-upload input[type=file]{display:none;}
+  .photo-remove{
+    background:none;border:none;color:var(--danger);font-size:12px;
+    font-weight:600;cursor:pointer;margin-left:8px;
+  }
+  .cv-photo{
+    width:72px;height:72px;border-radius:50%;object-fit:cover;
+    float:right;border:1px solid var(--line);margin-left:14px;
+  }
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:480px){.row2{grid-template-columns:1fr;}}
+
+  .btn-generate{
+    width:100%;margin-top:22px;
+    background:var(--pine);color:#fff;
+    border:none;border-radius:8px;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;
+    padding:14px;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .btn-generate:hover{background:var(--pine-dark);}
+  .btn-generate:active{transform:translateY(1px);}
+  .error-msg{
+    color:var(--danger);font-size:13px;font-weight:600;
+    margin-top:10px;display:none;
+  }
+
+  /* Dossier / tabs */
+  #resultats{display:none;margin-top:32px;}
+  .tabs{display:flex;gap:4px;position:relative;z-index:2;padding-left:6px;}
+  .tab{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;
+    background:var(--paper-2);color:var(--ink-soft);
+    border:1px solid var(--line);border-bottom:none;
+    border-radius:8px 8px 0 0;
+    padding:10px 16px 12px;
+    cursor:pointer;
+    margin-bottom:-1px;
+  }
+  .tab.active{
+    background:#fff;color:var(--pine-dark);
+    box-shadow:0 -3px 8px rgba(0,0,0,0.05);
+  }
+  .sheet-stack{position:relative;}
+  .sheet-stack::before, .sheet-stack::after{
+    content:"";position:absolute;left:8px;right:8px;
+    background:var(--paper-2);border:1px solid var(--line);
+    border-radius:0 var(--radius) var(--radius) var(--radius);
+  }
+  .sheet-stack::before{top:6px;height:100%;transform:rotate(-0.6deg);z-index:0;}
+  .sheet-stack::after{top:3px;height:100%;transform:rotate(0.4deg);z-index:0;background:#f6f2e8;}
+  .sheet{
+    position:relative;z-index:1;
+    background:#fff;border:1px solid var(--line);
+    border-radius:0 var(--radius) var(--radius) var(--radius);
+    padding:26px 22px;
+  }
+  .doc-pane{display:none;}
+  .doc-pane.active{display:block;}
+
+  .actions-bar{display:flex;gap:10px;margin-top:14px;}
+  .btn-ghost{
+    flex:1;background:none;border:1px solid var(--line);border-radius:8px;
+    padding:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;
+    color:var(--pine-dark);cursor:pointer;
+  }
+  .btn-ghost:hover{background:var(--paper-2);}
+
+  /* CV content */
+  .cv-name{font-family:'Fraunces',serif;font-weight:700;font-size:24px;color:var(--pine-dark);margin:0;}
+  .cv-tagline{color:var(--gold);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin:2px 0 18px;}
+  .cv-section{margin-bottom:18px;}
+  .cv-section h3{
+    font-family:'Fraunces',serif;font-size:14px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.08em;color:var(--pine);
+    border-bottom:1px solid var(--line);padding-bottom:6px;margin:0 0 10px;
+  }
+  .cv-section ul{margin:0;padding-left:18px;}
+  .cv-section li{margin-bottom:6px;font-size:14.5px;}
+  .cv-section p{margin:0;font-size:14.5px;white-space:pre-line;}
+
+  /* Lettre */
+  .lettre-body{white-space:pre-line;font-size:14.5px;line-height:1.7;}
+
+  /* Correction */
+  .verdict{
+    font-family:'Fraunces',serif;font-weight:600;font-size:17px;
+    color:var(--pine-dark);margin:0 0 14px;
+  }
+  .check-list{list-style:none;margin:0;padding:0;}
+  .check-list li{
+    display:flex;gap:10px;padding:9px 0;
+    border-bottom:1px solid var(--line);font-size:14px;
+  }
+  .check-list li:last-child{border-bottom:none;}
+  .badge-ok{color:#1a7a4c;font-weight:700;}
+  .badge-warn{color:var(--gold);font-weight:700;}
+
+  /* Paywall */
+  .compteur{
+    font-size:12.5px;color:var(--ink-soft);margin-top:10px;text-align:center;
+  }
+  .compteur strong{color:var(--pine-dark);}
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(28,30,27,0.55);
+    z-index:50;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:#fff;border-radius:var(--radius);max-width:380px;width:100%;
+    padding:28px 24px;text-align:center;
+  }
+  .modal-box .stamp{margin-bottom:14px;}
+  .modal-box h2{
+    font-family:'Fraunces',serif;font-size:21px;font-weight:600;
+    color:var(--pine-dark);margin:0 0 10px;
+  }
+  .modal-box p{font-size:14px;color:var(--ink-soft);margin:0 0 20px;}
+  .prix{
+    font-family:'Fraunces',serif;font-size:28px;font-weight:700;
+    color:var(--gold);margin:0 0 20px;
+  }
+  .prix span{font-size:14px;color:var(--ink-soft);font-weight:400;}
+  .btn-pay{
+    width:100%;background:var(--gold);color:#fff;border:none;border-radius:8px;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:15px;padding:14px;
+    cursor:pointer;margin-bottom:10px;
+  }
+  .btn-pay:hover{opacity:.92;}
+  .btn-pay-carte{
+    background:#fff;color:var(--pine-dark);border:1.5px solid var(--pine);
+  }
+  .carte-note{font-size:11.5px;color:var(--ink-soft);margin:-4px 0 14px;}
+  .btn-close-modal{
+    width:100%;background:none;border:none;color:var(--ink-soft);
+    font-size:13px;font-weight:600;cursor:pointer;padding:8px;
+  }
+
+  /* Publicité */
+  .ad-slot{
+    margin:20px 0;min-height:90px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--paper-2);border:1px dashed var(--line);
+    border-radius:8px;font-size:12px;color:var(--ink-soft);
+    overflow:hidden;
+  }
+
+  /* Contenu éditorial */
+  .content-section{margin:36px 0;}
+  .content-section h2{
+    font-family:'Fraunces',serif;font-size:22px;font-weight:600;
+    color:var(--pine-dark);margin:0 0 14px;
+  }
+  .content-section p{color:var(--ink-soft);font-size:14.5px;margin:0 0 12px;}
+  .guide-steps{list-style:none;margin:0;padding:0;counter-reset:etape;}
+  .guide-steps li{
+    counter-increment:etape;position:relative;padding:0 0 16px 40px;
+    font-size:14.5px;color:var(--ink);
+  }
+  .guide-steps li::before{
+    content:counter(etape);position:absolute;left:0;top:-2px;
+    width:26px;height:26px;border-radius:50%;background:var(--pine);
+    color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .guide-steps li strong{display:block;color:var(--pine-dark);margin-bottom:2px;}
+  .conseils-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:480px){.conseils-grid{grid-template-columns:1fr;}}
+  .conseil-item{
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+    padding:16px;font-size:13.5px;color:var(--ink-soft);
+  }
+  .conseil-item strong{display:block;color:var(--pine-dark);font-size:14px;margin-bottom:4px;}
+
+  footer.site-footer{
+    margin-top:44px;padding-top:24px;border-top:1px solid var(--line);
+    text-align:center;
+  }
+  footer.site-footer nav{margin-bottom:10px;}
+  footer.site-footer a{
+    color:var(--ink-soft);font-size:13px;text-decoration:none;margin:0 10px;
+  }
+  footer.site-footer a:hover{color:var(--pine);text-decoration:underline;}
+  footer.site-footer .copyright{font-size:12px;color:var(--ink-soft);opacity:.8;}
+
+  /* Authentification */
+  .auth-overlay{
+    position:fixed;inset:0;background:var(--paper);z-index:100;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .auth-overlay.hidden{display:none;}
+  .auth-box{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    max-width:380px;width:100%;padding:30px 24px;
+  }
+  .auth-box h1{font-size:24px;text-align:center;}
+  .auth-box .stamp{display:flex;width:fit-content;margin:0 auto 14px;}
+  .auth-tabs{display:flex;gap:8px;margin:18px 0 6px;background:var(--paper-2);border-radius:8px;padding:4px;}
+  .auth-tab{
+    flex:1;text-align:center;padding:8px;border-radius:6px;cursor:pointer;
+    font-size:13px;font-weight:600;color:var(--ink-soft);
+  }
+  .auth-tab.active{background:#fff;color:var(--pine-dark);}
+  .auth-form{display:none;}
+  .auth-form.active{display:block;}
+  .auth-error{color:var(--danger);font-size:13px;font-weight:600;margin-top:8px;display:none;}
+  .user-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--paper-2);border-radius:8px;padding:10px 14px;margin-bottom:20px;
+    font-size:13px;color:var(--ink-soft);
+  }
+  .user-bar button{
+    background:none;border:none;color:var(--pine);font-weight:600;
+    font-size:13px;cursor:pointer;
+  }
+
+  @media print{
+    body *{visibility:hidden;}
+    .sheet, .sheet *{visibility:visible;}
+    .sheet{position:absolute;top:0;left:0;width:100%;border:none;padding:0;}
+    .doc-pane{display:none !important;}
+    .doc-pane.active{display:block !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="logo-row" style="justify-content:center;margin-bottom:10px;">
+      <svg width="40" height="40" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="12" fill="#0e4b43"/>
+        <path d="M13 12h12l6 6v14a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V14a2 2 0 0 1 2-2z" fill="#fbf8f2"/>
+        <path d="M25 12v6h6" stroke="#0e4b43" stroke-width="1.5"/>
+        <path d="M16 24l4 4 8-8" stroke="#b9862f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-wordmark">Mon<span>Dossier</span></span>
+    </div>
+    <span class="stamp">Dossier de candidature</span>
+    <h1>Connectez-vous</h1>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-connexion" onclick="switchAuthTab('connexion')">Connexion</div>
+      <div class="auth-tab" id="tab-inscription" onclick="switchAuthTab('inscription')">Inscription</div>
+    </div>
+
+    <div class="auth-form active" id="form-connexion">
+      <label for="login-email">Email</label>
+      <input type="text" id="login-email" placeholder="vous@exemple.com">
+      <label for="login-password">Mot de passe</label>
+      <input type="text" id="login-password" placeholder="••••••••">
+      <button class="btn-generate" onclick="connecter()">Se connecter</button>
+      <p class="auth-error" id="login-erreur"></p>
+    </div>
+
+    <div class="auth-form" id="form-inscription">
+      <label for="signup-email">Email</label>
+      <input type="text" id="signup-email" placeholder="vous@exemple.com">
+      <label for="signup-password">Mot de passe <span class="opt">(6 caractères min.)</span></label>
+      <input type="text" id="signup-password" placeholder="••••••••">
+      <button class="btn-generate" onclick="inscrire()">Créer mon compte</button>
+      <p class="auth-error" id="signup-erreur"></p>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="app-content" style="display:none;">
+
+  <div class="user-bar">
+    <span id="user-email-affiche"></span>
+    <button onclick="deconnecter()">Se déconnecter</button>
+  </div>
+
+
+  <header class="top">
+    <div class="logo-row">
+      <svg width="40" height="40" viewBox="0 0 44 44" fill="none">
+        <rect width="44" height="44" rx="12" fill="#0e4b43"/>
+        <path d="M13 12h12l6 6v14a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V14a2 2 0 0 1 2-2z" fill="#fbf8f2"/>
+        <path d="M25 12v6h6" stroke="#0e4b43" stroke-width="1.5"/>
+        <path d="M16 24l4 4 8-8" stroke="#b9862f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-wordmark">Mon<span>Dossier</span></span>
+    </div>
+    <span class="stamp">Dossier de candidature</span>
+    <h1>Montez votre dossier en quelques minutes</h1>
+    <p>Renseignez votre parcours une seule fois : votre CV, votre lettre de motivation et une relecture s'en dégagent automatiquement.</p>
+  </header>
+
+  <div class="card">
+    <h2>Vos informations</h2>
+    <p class="hint">Plus vos réponses sont détaillées, plus le dossier généré sera solide.</p>
+
+    <label for="nom">Nom complet</label>
+    <input type="text" id="nom" placeholder="Ex. Aïcha Dossou">
+
+    <label>Photo <span class="opt">(optionnel)</span></label>
+    <div class="photo-upload">
+      <div class="photo-preview" id="photo-preview">Aucune</div>
+      <button type="button" class="photo-upload-btn" onclick="document.getElementById('photo-input').click()">Choisir une photo</button>
+      <button type="button" class="photo-remove" id="photo-remove-btn" style="display:none;" onclick="supprimerPhoto()">Retirer</button>
+      <input type="file" id="photo-input" accept="image/*" onchange="chargerPhoto(event)">
+    </div>
+
+    <div class="row2">
+      <div>
+        <label for="poste">Poste visé <span class="opt">(optionnel)</span></label>
+        <input type="text" id="poste" placeholder="Ex. Assistant commercial">
+      </div>
+      <div>
+        <label for="entreprise">Entreprise ciblée <span class="opt">(optionnel)</span></label>
+        <input type="text" id="entreprise" placeholder="Ex. Société ABC">
+      </div>
+    </div>
+
+    <label for="experience">Expérience professionnelle <span class="opt">(une ligne par poste)</span></label>
+    <textarea id="experience" placeholder="Ex. Vendeuse chez Boutique Mode (2022-2024) - gestion des stocks et relation client"></textarea>
+
+    <label for="competences">Compétences <span class="opt">(séparées par des virgules)</span></label>
+    <textarea id="competences" placeholder="Ex. Excel, gestion de stock, service client, Canva"></textarea>
+
+    <label for="formation">Formation <span class="opt">(une ligne par diplôme)</span></label>
+    <textarea id="formation" placeholder="Ex. BTS Commerce, Université de Cotonou (2021)"></textarea>
+
+    <button class="btn-generate" onclick="genererDossier()">Générer CV, lettre et correction</button>
+    <p class="error-msg" id="erreur">Merci de renseigner au moins votre nom, une expérience et une compétence.</p>
+    <p class="compteur" id="compteur-texte"></p>
+  </div>
+
+  <section class="content-section">
+    <h2>Comment ça marche</h2>
+    <ol class="guide-steps">
+      <li><strong>Renseignez vos informations</strong>Nom, expérience, compétences et formation dans le formulaire ci-dessus.</li>
+      <li><strong>Générez votre dossier</strong>En un clic, obtenez un CV structuré, une lettre de motivation et une analyse de votre profil.</li>
+      <li><strong>Ajustez et téléchargez</strong>Copiez le texte ou imprimez directement en PDF pour l'envoyer aux recruteurs.</li>
+    </ol>
+  </section>
+
+  <section class="content-section">
+    <h2>Conseils pour une candidature qui se démarque</h2>
+    <div class="conseils-grid">
+      <div class="conseil-item"><strong>Restez concret</strong>Décrivez vos expériences avec des résultats chiffrés plutôt que des généralités.</div>
+      <div class="conseil-item"><strong>Adaptez chaque lettre</strong>Mentionnez le nom de l'entreprise et le poste précis visé.</div>
+      <div class="conseil-item"><strong>Relisez toujours</strong>Une faute d'orthographe peut suffire à écarter une candidature.</div>
+      <div class="conseil-item"><strong>Restez synthétique</strong>Un CV clair et aéré se lit plus vite qu'un CV surchargé.</div>
+    </div>
+  </section>
+
+  <!-- Emplacement publicitaire 1 : à remplir après validation AdSense -->
+  <div class="ad-slot">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-9456025403062274"
+         data-ad-slot="REMPLACE_PAR_TON_SLOT"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <section id="resultats">
+    <div class="tabs">
+      <button class="tab active" data-tab="cv" onclick="switchTab('cv')">CV</button>
+      <button class="tab" data-tab="lettre" onclick="switchTab('lettre')">Lettre</button>
+      <button class="tab" data-tab="correction" onclick="switchTab('correction')">Correction</button>
+    </div>
+    <div class="sheet-stack">
+      <div class="sheet">
+
+        <div class="doc-pane active" id="pane-cv">
+          <img id="cv-photo" class="cv-photo" style="display:none;">
+          <p class="cv-name" id="cv-nom"></p>
+          <p class="cv-tagline" id="cv-poste"></p>
+          <div class="cv-section">
+            <h3>Expérience</h3>
+            <ul id="cv-experience"></ul>
+          </div>
+          <div class="cv-section">
+            <h3>Compétences</h3>
+            <ul id="cv-competences"></ul>
+          </div>
+          <div class="cv-section">
+            <h3>Formation</h3>
+            <ul id="cv-formation"></ul>
+          </div>
+        </div>
+
+        <div class="doc-pane" id="pane-lettre">
+          <div class="lettre-body" id="lettre-texte"></div>
+        </div>
+
+        <div class="doc-pane" id="pane-correction">
+          <p class="verdict" id="correction-verdict"></p>
+          <ul class="check-list" id="correction-liste"></ul>
+        </div>
+
+      </div>
+    </div>
+    <div class="actions-bar">
+      <button class="btn-ghost" onclick="copierActif()">Copier ce texte</button>
+      <button class="btn-ghost" onclick="window.print()">Imprimer / PDF</button>
+    </div>
+  </section>
+
+  <!-- Emplacement publicitaire 2 : à remplir après validation AdSense -->
+  <div class="ad-slot">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-9456025403062274"
+         data-ad-slot="REMPLACE_PAR_TON_AUTRE_SLOT"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <footer class="site-footer">
+    <nav>
+      <a href="a-propos.html">À propos</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="conditions.html">Conditions d'utilisation</a>
+    </nav>
+    <p class="copyright">© 2026 Mon Dossier — Générateur de candidature</p>
+  </footer>
+
+</div>
+
+<div class="modal-overlay" id="modal-paiement">
+  <div class="modal-box">
+    <span class="stamp">Accès illimité</span>
+    <h2>Vos 2 essais gratuits sont utilisés</h2>
+    <p>Débloquez les générations illimitées de CV, lettres de motivation et corrections, sans limite de temps.</p>
+    <p class="prix">5000 FCFA <span>/ accès à vie</span></p>
+    <button class="btn-pay" onclick="ouvrirPaiement()">Payer avec Mobile Money</button>
+    <button class="btn-pay btn-pay-carte" onclick="ouvrirPaiementCarte()">Payer par carte bancaire</button>
+    <p class="carte-note">Pour les personnes hors du Bénin</p>
+    <button class="btn-close-modal" onclick="fermerModal()">Plus tard</button>
+  </div>
+</div>
+
+<!-- Widget de paiement KkiaPay (Mobile Money Bénin) -->
+<script src="https://cdn.kkiapay.me/k.js"></script>
+
+<!-- Configuration Firebase : à remplacer par tes propres clés (Firebase Console → Paramètres du projet) -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCMi87gRPaW7TXLM6ZJ3rk_2wNu-9RjQcA",
+  authDomain: "dossier-cv.firebaseapp.com",
+  projectId: "dossier-cv",
+  storageBucket: "dossier-cv.firebasestorage.app",
+  messagingSenderId: "804300112136",
+  appId: "1:804300112136:web:43e403e1729920ea0aecbd"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const NB_GRATUIT = 2;
+const CLE_PUBLIQUE_KKIAPAY = "7cfade907ea711f19fc2b728ea58adda";
+
+let currentUser = null;
+let userData = { nb_generations: 0, debloque: false };
+
+function switchAuthTab(tab){
+  document.getElementById('tab-connexion').classList.toggle('active', tab==='connexion');
+  document.getElementById('tab-inscription').classList.toggle('active', tab==='inscription');
+  document.getElementById('form-connexion').classList.toggle('active', tab==='connexion');
+  document.getElementById('form-inscription').classList.toggle('active', tab==='inscription');
+}
+
+function afficherErreurAuth(id, message){
+  const el = document.getElementById(id);
+  el.textContent = message;
+  el.style.display = 'block';
+}
+
+function connecter(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  document.getElementById('login-erreur').style.display = 'none';
+  auth.signInWithEmailAndPassword(email, pass).catch(err=>{
+    afficherErreurAuth('login-erreur', 'Connexion impossible : ' + traduireErreur(err.code));
+  });
+}
+
+function inscrire(){
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-password').value;
+  document.getElementById('signup-erreur').style.display = 'none';
+  auth.createUserWithEmailAndPassword(email, pass).then(cred=>{
+    return db.collection('utilisateurs').doc(cred.user.uid).set({ nb_generations: 0, debloque: false });
+  }).catch(err=>{
+    afficherErreurAuth('signup-erreur', 'Inscription impossible : ' + traduireErreur(err.code));
+  });
+}
+
+function deconnecter(){
+  auth.signOut();
+}
+
+function traduireErreur(code){
+  const table = {
+    'auth/invalid-email': 'adresse email invalide.',
+    'auth/user-not-found': 'aucun compte avec cet email.',
+    'auth/wrong-password': 'mot de passe incorrect.',
+    'auth/email-already-in-use': 'un compte existe déjà avec cet email.',
+    'auth/weak-password': 'mot de passe trop court (6 caractères min.).'
+  };
+  return table[code] || 'veuillez réessayer.';
+}
+
+auth.onAuthStateChanged(function(user){
+  if(user){
+    currentUser = user;
+    db.collection('utilisateurs').doc(user.uid).get().then(doc=>{
+      if(doc.exists){
+        userData = doc.data();
+      } else {
+        userData = { nb_generations: 0, debloque: false };
+        db.collection('utilisateurs').doc(user.uid).set(userData);
+      }
+      document.getElementById('user-email-affiche').textContent = user.email;
+      document.getElementById('auth-overlay').classList.add('hidden');
+      document.getElementById('app-content').style.display = 'block';
+      majAffichageCompteur();
+      verifierRetourPaiementCarte();
+    });
+  } else {
+    currentUser = null;
+    document.getElementById('auth-overlay').classList.remove('hidden');
+    document.getElementById('app-content').style.display = 'none';
+  }
+});
+
+function nbUtilisations(){
+  return userData.nb_generations || 0;
+}
+function estDebloque(){
+  return userData.debloque === true;
+}
+function majAffichageCompteur(){
+  const el = document.getElementById('compteur-texte');
+  if(estDebloque()){
+    el.textContent = 'Accès illimité activé.';
+  } else {
+    const restant = Math.max(NB_GRATUIT - nbUtilisations(), 0);
+    el.textContent = restant + ' génération(s) gratuite(s) restante(s) sur ' + NB_GRATUIT + '.';
+  }
+}
+function ouvrirModal(){
+  document.getElementById('modal-paiement').classList.add('show');
+}
+function fermerModal(){
+  document.getElementById('modal-paiement').classList.remove('show');
+}
+function ouvrirPaiement(){
+  openKkiapayWidget({
+    amount: 5000,
+    key: CLE_PUBLIQUE_KKIAPAY,
+    sandbox: true, // passer à false une fois la clé réelle configurée
+    data: currentUser ? currentUser.uid : "invite"
+  });
+}
+
+// Paiement par carte bancaire (Stripe Payment Link) : à remplacer par ton propre lien Stripe
+const LIEN_PAIEMENT_CARTE = "https://buy.stripe.com/REMPLACE_PAR_TON_LIEN";
+
+function ouvrirPaiementCarte(){
+  window.location.href = LIEN_PAIEMENT_CARTE + "?client_reference_id=" + (currentUser ? currentUser.uid : "invite");
+}
+
+// Si on revient d'un paiement carte réussi (redirection Stripe avec ?debloque=1)
+function verifierRetourPaiementCarte(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('debloque') === '1' && currentUser){
+    userData.debloque = true;
+    db.collection('utilisateurs').doc(currentUser.uid).update({ debloque: true });
+    majAffichageCompteur();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+addSuccessListener(function(response){
+  if(currentUser){
+    userData.debloque = true;
+    db.collection('utilisateurs').doc(currentUser.uid).update({ debloque: true });
+  }
+  fermerModal();
+  majAffichageCompteur();
+  genererDossier();
+});
+
+</script>
+<script>
+let ongletActif = 'cv';
+
+function switchTab(tab){
+  ongletActif = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.querySelectorAll('.doc-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+tab).classList.add('active');
+}
+
+function listeDepuisLignes(texte){
+  return texte.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+}
+function listeDepuisVirgules(texte){
+  return texte.split(',').map(l=>l.trim()).filter(l=>l.length>0);
+}
+
+let photoData = null;
+
+function chargerPhoto(event){
+  const fichier = event.target.files[0];
+  if(!fichier) return;
+  if(fichier.size > 3 * 1024 * 1024){
+    alert("Cette image est trop lourde (max 3 Mo). Choisis une photo plus légère.");
+    return;
+  }
+  const lecteur = new FileReader();
+  lecteur.onload = function(e){
+    photoData = e.target.result;
+    document.getElementById('photo-preview').innerHTML = '<img src="' + photoData + '">';
+    document.getElementById('photo-remove-btn').style.display = 'inline';
+  };
+  lecteur.readAsDataURL(fichier);
+}
+
+function supprimerPhoto(){
+  photoData = null;
+  document.getElementById('photo-preview').innerHTML = 'Aucune';
+  document.getElementById('photo-input').value = '';
+  document.getElementById('photo-remove-btn').style.display = 'none';
+}
+
+function genererDossier(){
+  if(!estDebloque() && nbUtilisations() >= NB_GRATUIT){
+    ouvrirModal();
+    return;
+  }
+
+  const nom = document.getElementById('nom').value.trim();
+  const poste = document.getElementById('poste').value.trim();
+  const entreprise = document.getElementById('entreprise').value.trim();
+  const experienceRaw = document.getElementById('experience').value.trim();
+  const competencesRaw = document.getElementById('competences').value.trim();
+  const formationRaw = document.getElementById('formation').value.trim();
+
+  const experiences = listeDepuisLignes(experienceRaw);
+  const competences = listeDepuisVirgules(competencesRaw);
+  const formations = listeDepuisLignes(formationRaw);
+
+  const erreurEl = document.getElementById('erreur');
+  if(!nom || experiences.length===0 || competences.length===0){
+    erreurEl.style.display='block';
+    return;
+  }
+  erreurEl.style.display='none';
+
+  // ---- CV ----
+  const cvPhotoEl = document.getElementById('cv-photo');
+  if(photoData){
+    cvPhotoEl.src = photoData;
+    cvPhotoEl.style.display = 'block';
+  } else {
+    cvPhotoEl.style.display = 'none';
+  }
+  document.getElementById('cv-nom').textContent = nom;
+  document.getElementById('cv-poste').textContent = poste ? poste : 'Candidature spontanée';
+
+  const expUl = document.getElementById('cv-experience');
+  expUl.innerHTML = '';
+  experiences.forEach(e=>{
+    const li = document.createElement('li');
+    li.textContent = e;
+    expUl.appendChild(li);
+  });
+
+  const compUl = document.getElementById('cv-competences');
+  compUl.innerHTML = '';
+  competences.forEach(c=>{
+    const li = document.createElement('li');
+    li.textContent = c;
+    compUl.appendChild(li);
+  });
+
+  const formUl = document.getElementById('cv-formation');
+  formUl.innerHTML = '';
+  if(formations.length===0){
+    const li = document.createElement('li');
+    li.textContent = 'Non renseignée';
+    formUl.appendChild(li);
+  } else {
+    formations.forEach(f=>{
+      const li = document.createElement('li');
+      li.textContent = f;
+      formUl.appendChild(li);
+    });
+  }
+
+  // ---- Lettre de motivation ----
+  const posteTexte = poste || 'le poste proposé';
+  const entrepriseTexte = entreprise || 'votre entreprise';
+  const premiereExp = experiences[0] || '';
+  const competencesTexte = competences.slice(0,4).join(', ');
+
+  const lettre =
+`Madame, Monsieur,
+
+Je vous adresse ma candidature pour ${posteTexte} au sein de ${entrepriseTexte}.
+
+Fort(e) de mon expérience en tant que ${premiereExp}, j'ai développé des compétences solides en ${competencesTexte}, que je souhaite aujourd'hui mettre au service de votre équipe.
+
+${formations.length>0 ? "Ma formation (" + formations[0] + ") complète cette expérience de terrain et m'a donné une base solide pour évoluer rapidement dans mes missions." : "Mon parcours de terrain m'a permis de développer une réelle autonomie dans mes missions quotidiennes."}
+
+Je suis disponible rapidement et serais ravi(e) de vous rencontrer pour échanger sur ma candidature.
+
+Dans l'attente de votre retour, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+${nom}`;
+
+  document.getElementById('lettre-texte').textContent = lettre;
+
+  // ---- Correction ----
+  const checks = [];
+  const actionVerbes = ['géré','gérée','développé','développée','organisé','organisée','encadré','encadrée','vendu','vendue','conçu','conçue','piloté','pilotée','amélioré','améliorée','créé','créée'];
+  const texteExpMinuscule = experienceRaw.toLowerCase();
+  const aVerbeAction = actionVerbes.some(v=>texteExpMinuscule.includes(v));
+  const aChiffre = /\d/.test(experienceRaw);
+
+  checks.push({ok: nom.length>0, texte:'Nom renseigné clairement'});
+  checks.push({ok: experiences.length>=2, texte: experiences.length>=2 ? 'Plusieurs expériences listées' : 'Une seule expérience listée — ajoutez-en si possible pour renforcer le CV'});
+  checks.push({ok: competences.length>=4, texte: competences.length>=4 ? 'Bon nombre de compétences (' + competences.length + ')' : 'Peu de compétences listées (' + competences.length + ') — visez au moins 4 à 6'});
+  checks.push({ok: aVerbeAction, texte: aVerbeAction ? "Verbes d'action présents dans l'expérience" : 'Aucun verbe d\'action détecté — commencez vos lignes par "géré", "développé", "organisé"...'});
+  checks.push({ok: aChiffre, texte: aChiffre ? 'Résultats chiffrés présents' : 'Aucun chiffre détecté — un résultat chiffré (ex. "20 clients/jour") rend le CV plus convaincant'});
+  checks.push({ok: formations.length>0, texte: formations.length>0 ? 'Formation renseignée' : 'Formation manquante — même une formation courte ou un certificat compte'});
+
+  const nbOk = checks.filter(c=>c.ok).length;
+  const verdictEl = document.getElementById('correction-verdict');
+  if(nbOk===checks.length){
+    verdictEl.textContent = 'Excellent — votre dossier est solide.';
+  } else if(nbOk >= checks.length-2){
+    verdictEl.textContent = 'Bon dossier — quelques ajustements le renforceraient.';
+  } else {
+    verdictEl.textContent = 'Dossier à compléter avant envoi.';
+  }
+
+  const listeEl = document.getElementById('correction-liste');
+  listeEl.innerHTML = '';
+  checks.forEach(c=>{
+    const li = document.createElement('li');
+    const badge = document.createElement('span');
+    badge.className = c.ok ? 'badge-ok' : 'badge-warn';
+    badge.textContent = c.ok ? '✓' : '!';
+    const texte = document.createElement('span');
+    texte.textContent = c.texte;
+    li.appendChild(badge);
+    li.appendChild(texte);
+    listeEl.appendChild(li);
+  });
+
+  if(!estDebloque()){
+    userData.nb_generations = nbUtilisations() + 1;
+    if(currentUser){
+      db.collection('utilisateurs').doc(currentUser.uid).update({ nb_generations: userData.nb_generations });
+    }
+  }
+  majAffichageCompteur();
+
+  document.getElementById('resultats').style.display = 'block';
+  switchTab('cv');
+  document.getElementById('resultats').scrollIntoView({behavior:'smooth'});
+}
+
+function copierActif(){
+  let texte = '';
+  if(ongletActif==='cv'){
+    texte = document.getElementById('pane-cv').innerText;
+  } else if(ongletActif==='lettre'){
+    texte = document.getElementById('lettre-texte').innerText;
+  } else {
+    texte = document.getElementById('pane-correction').innerText;
+  }
+  navigator.clipboard.writeText(texte).then(()=>{
+    alert('Texte copié dans le presse-papiers.');
+  });
+}
+</script>
+</body>
+</html>
