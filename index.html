@@ -910,18 +910,25 @@ function fermerModal(){
 }
 
 function ouvrirPaiement(){
+  if (typeof FedaPay === "undefined") {
+    alert("FedaPay n'est pas chargé. Recharge la page puis réessaie.");
+    return;
+  }
+
   const widget = FedaPay.init({
     public_key: CLE_PUBLIQUE_FEDAPAY,
-    environment: 'sandbox',
-    locale: 'fr',
+    environment: "sandbox",
+    locale: "fr",
     transaction: {
       amount: 5000,
-      description: 'Accès illimité Mon Dossier'
+      description: "Accès illimité Mon Dossier"
     }
   });
 
   widget.open();
 }
+  
+
 // Paiement par carte bancaire (Stripe Payment Link) : à remplacer par ton propre lien Stripe
 const LIEN_PAIEMENT_CARTE = "https://buy.stripe.com/REMPLACE_PAR_TON_LIEN";
 
